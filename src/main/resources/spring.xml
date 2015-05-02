@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="s3bucket"
+		class="com.jktsoftware.amazondownloader.download.S3TypeBucket">
+		<constructor-arg ref="s3credentials"/>
+		<constructor-arg value="***YOURDEFAULTBUCKETNAME***"/>
+		<constructor-arg value="https://s3-eu-west-1.amazonaws.com"/>	
+	</bean>
+	
+	<bean id="queuemanager"
+            class="com.jktsoftware.amazondownloader.queuemanager.DownloaderQueueManager">
+		<constructor-arg ref="s3credentials"/>
+		<constructor-arg value="amazon-downloader-received"/>
+		<constructor-arg value="amazon-downloader-failed"/>
+	</bean>
+	
+	<bean id="s3credentials"
+            class="com.jktsoftware.amazondownloader.download.AwsCredentials">
+		<property name="accessKeyId" value="***YOURACCESSKEY***"/>
+		<property name="secretAccessKey" 
+                          value="***YOURSECRETACCESSKEY***"/>
+	</bean>
+</beans>

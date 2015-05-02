@@ -1,0 +1,30 @@
+This project is a simple downloader that downloads all files from an amazon s3 
+bucket when it is invoked via the command line in the following manner:-
+
+java -jar amazondownloader-1.0-SNAPSHOT-jar-with-dependencies.jar 
+    [-repoid <yourbucketname>]
+    [-objectid <objectid>]
+    [-ls]
+    [-download][-waittime <time in milliseconds>]
+
+Your default bucket name, access key and secret access key are defined within
+the spring.xml with src/main/resources
+
+The parameters in spring.xml are the following: -
+
+***YOURDEFAULTBUCKETNAME***
+***YOURACCESSKEY***
+***YOURSECRETACCESSKEY***
+
+Simply replace the above text within spring.xml with the correct values.
+
+You can also replace https://s3-eu-west-1.amazonaws.com within the spring.xml
+file with another s3 region url if so required.
+
+The project was built within NetBeans IDE 8.0 and is maven based.
+
+For some reason you will need to do a normal build (Run->Build Project) and then 
+select amazondownloader with the project window and double click on 
+'assembly single' within the navigator to which create a jar file with all 
+dependencies within it (if you select assembly single first it create the jar
+file but it doesnt work)...I will figure it out later :)
