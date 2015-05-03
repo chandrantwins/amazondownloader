@@ -54,6 +54,9 @@ public class Application {
     private static String _awsS3secretkey="";
     private static String _awsSQSaccesskey="";
     private static String _awsSQSsecretkey="";
+    private static String _awsSQSsuccessqueue="";
+    private static String _awsSQSfailqueue="";
+    
     private static long _argwaittime = 0;
 
     public static void main(String[] args) {
@@ -75,6 +78,8 @@ public class Application {
         options.addOption("s3sk","s3secretkey",true, "S3 secret key");
         options.addOption("sqsak","sqsaccesskey",true, "SQS access key");
         options.addOption("sqssk","sqssecretkey",true,"SQS secret key");
+        options.addOption("sq", "successqueue", true, "Success queue name");
+        options.addOption("fq", "failqueue", true, "Fail queue name");
         options.addOption("ls","listobjects", 
                 false, "List objects in repository");
         options.addOption("h","help",false, "Help screen");
@@ -119,6 +124,12 @@ public class Application {
             }
             if (cmd.hasOption("sqssk")) {
                 _awsSQSsecretkey=(cmd.getOptionValue("sqssk"));
+            }
+            if (cmd.hasOption("sq")) {
+                _awsSQSsuccessqueue = (cmd.getOptionValue("sq"));
+            }
+            if (cmd.hasOption("fq")) {
+                _awsSQSfailqueue = (cmd.getOptionValue("fq"));
             }
             //if the -ls option has been specified then the program
             //will list the available objects within the repository
@@ -177,7 +188,7 @@ public class Application {
                     new AwsCredentials(_awsS3accesskey, _awsS3secretkey);
             repo.setCredentials(overridecredentials);
         }
-        
+                
         System.out.println(repo.getCredentials().getAccessKey());
         
         //setup the amazon sqs based queue manager
@@ -191,6 +202,17 @@ public class Application {
                     new AwsCredentials(_awsSQSaccesskey, _awsSQSsecretkey);
             queuemanager.setCredentials(overridecredentials);
         }
+        
+        //if success queue name is specified in commandline use it instead
+        if(!_awsSQSsuccessqueue.isEmpty()) {
+            queuemanager.setSuccessQueueName(_awsSQSsuccessqueue);
+        }
+        
+        //if fail queue name is specified in commandline use it instead
+        if(!_awsSQSfailqueue.isEmpty()) {
+            queuemanager.setFailQueueName(_awsSQSfailqueue);
+        }
+
         //create queues on the cloud platform
         queuemanager.CreateQueues();
         

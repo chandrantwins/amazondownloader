@@ -40,6 +40,14 @@ public interface IQueueManager {
     
     public ICredentials getCredentials();
     
+    public void setSuccessQueueName(String name);
+    
+    public String getSuccessQueueName();
+    
+    public void setFailQueueName(String name);
+    
+    public String getFailQueueName();
+    
     public void setCredentials(ICredentials credentials);
     
     public void CreateQueues();

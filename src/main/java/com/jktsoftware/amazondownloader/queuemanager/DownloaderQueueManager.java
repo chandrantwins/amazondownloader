@@ -60,6 +60,22 @@ public class DownloaderQueueManager implements IQueueManager {
         this._failedqueuename = failedqueuename;
     }
     
+    public void setSuccessQueueName(String name){
+        _receivedqueuename=name;
+    }
+    
+    public String getSuccessQueueName() {
+        return _receivedqueuename;
+    }
+    
+    public void setFailQueueName(String name) {
+        _failedqueuename = name;
+    }
+    
+    public String getFailQueueName() {
+        return _failedqueuename;
+    }
+    
     public void CreateQueues() {
         AWSCredentials awscredentials
                 = new BasicAWSCredentials(
