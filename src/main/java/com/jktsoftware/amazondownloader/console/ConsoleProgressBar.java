@@ -23,19 +23,30 @@ THE SOFTWARE.
  */
 package com.jktsoftware.amazondownloader.console;
 
+/**
+ *
+ * @author jktdev
+ */
 public class ConsoleProgressBar {
-	public String getProgress(
-			long progressbytes,
-			long bytesread,
-			long totalbytes) {
+        
+    /**
+     *
+     * @param progressbytes total bytes read so far (e.g. 2048 bytes of a 
+     * 3072 byte file)
+     * @param totalbytes total size of file being read (e.g. 3072 bytes)
+     * @return a string representation of a progress bar
+     */
+    public String getProgress(
+            long progressbytes,
+            long totalbytes) 
+        {
 		String progress = "Bytes read: " +
-			getProgressBar(progressbytes, bytesread, totalbytes, 20);
+			getProgressBar(progressbytes, totalbytes, 20);
 		return progress;
 	}
 	
-	public String getProgressBar(
-			long progressbytes, 
-			long bytesread,
+	private String getProgressBar(
+			long progressbytes,
 			long totalbytes,
 			long totalsections) {
 		String progressbar="";

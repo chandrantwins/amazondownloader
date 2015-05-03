@@ -55,72 +55,107 @@ public class Application {
 		String objectidtodownload="";
 		long waittime=0;
 		
+                //load spring.xml configuration file
 		ApplicationContext context = 
 		          new ClassPathXmlApplicationContext(
 		        		  new String[] {"spring.xml"});
-		IObjectRepo repo = 
+		
+                //create an s3 bucket type repository object
+                IObjectRepo repo = 
 				(IObjectRepo)context.getBean("s3bucket");
 		System.out.println(repo.getCredentials().getAccessKey());
 		
+                //setup the amazon sqs based queue manager
 		IQueueManager queuemanager = 
 				(IQueueManager)context.getBean("queuemanager");
 		System.out.println(queuemanager.getCredentials().getAccessKey());
 		
+                //add available command line options to the command line 
+                //options object (for later parsing)
 		Options options = addOptions();
 		
+                //create a basic command line parser object
 		CommandLineParser parser = new BasicParser();
 		
 		try {
+                        //parse the command line arguments
 			CommandLine cmd = parser.parse( options, args);
                         
-                        System.out.println(args[0]);
-                        
+                        //if the -repoid option has been specified this
+                        //indicates we will not be using the default repository
+                        //specified within the spring.xml file and instead we
+                        //will be using the newly specified bucket repository
 			if(cmd.hasOption("repoid")){ 
-				repo.setRepoId(cmd.getOptionValue("repoid"));
+                            repo.setRepoId(cmd.getOptionValue("repoid"));
 			}
+                        //if the -objectid has been specified we will be
+                        //downloading the specified object only from the
+                        //repository
 			if(cmd.hasOption("objectid")) {
-				objectidtodownload = (cmd.getOptionValue("objectid"));
+                            objectidtodownload = 
+                                (cmd.getOptionValue("objectid"));
 			}
+                        //if the -ls option has been specified then the program
+                        //will list the available objects within the repository
 			if(cmd.hasOption("ls")) {
-				listobjects = true;
+                            listobjects = true;
 			}
+                        //if the -download option has been specified we will
+                        //actually download the object. -download must be
+                        //within the command line to actually download the 
+                        //object as this will cost money
 			if(cmd.hasOption("download")) {
-				startdownloads=true;
+                            startdownloads=true;
 			}
+                        //if the -waittime option has been specified the 
+                        //program will wait for a specified period of time
+                        //in milliseconds before trying to download the
+                        //next file in the queue
 			if(cmd.hasOption("waittime")) {
-				try {
-					waittime = new Long(cmd.getOptionValue("waittime")).longValue();
-				} catch (Exception e) {
-					waittime = 0;
-				}
+                            try {
+                                waittime = new Long(
+                                        cmd.getOptionValue("waittime"))
+                                            .longValue();
+                            } catch (Exception e) {
+                                waittime = 0;
+                            }
 			}
 		} catch (ParseException e1) {
-			// TODO Auto-generated catch block
+			// if there is an error print the stack
 			e1.printStackTrace();
 		}
 		
+                //get a list of all objects in the repository
 		List<IObject> objectsinrepo = repo.getObjectsInRepo();
 		
+                //if the listobject option has been specified print a list
+                //of objects and the associate properties to the console
 		if(listobjects) {
 			listObjects(objectsinrepo);
 		}
 		
-		if(startdownloads) {
-			for (IObject objecttodownload : objectsinrepo) {
-				if(objectidtodownload.contentEquals("") ||
-				    objecttodownload.getObjectKey()
-				       .contentEquals(objectidtodownload)) {
-					downloadObject(objecttodownload, queuemanager);
-					System.out.println("Pausing for " + waittime + " milliseconds");
-					try {
-						Thread.sleep(waittime);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-		}
+                //if the -download option has been specified then commence
+                //downloading the objects from the repository
+		if (startdownloads) {
+                    //loop throught the objects in the repository
+                    for (IObject objecttodownload : objectsinrepo) {
+                        if (objectidtodownload.contentEquals("")
+                                || objecttodownload.getObjectKey()
+                                .contentEquals(objectidtodownload)) {
+                            //download the object
+                            downloadObject(objecttodownload, queuemanager);
+                            //print the pause message
+                            System.out.println("Pausing for " + waittime + " milliseconds");
+                            try {
+                                //sleep for the specified amount of time
+                                Thread.sleep(waittime);
+                            } catch (InterruptedException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+            }
 	}
 	
 	public static void downloadObject(
@@ -148,7 +183,6 @@ public class Application {
 				currentbytes = currentbytes + bytesread;
 				String newprogress = progressbar.getProgress(
 					currentbytes,
-					bytesread,
 					objecttodownload.getObjectSize()) + "\r";
 				if(!newprogress.contentEquals(previousprogress)) {
 					System.out.print(newprogress);
@@ -157,7 +191,6 @@ public class Application {
 			}
 			System.out.println(progressbar.getProgress(
 					currentbytes,
-					bytesread,
 					objecttodownload.getObjectSize()));
 			System.out.println("Object downloaded");
 			input.close();
@@ -174,21 +207,24 @@ public class Application {
 	}
 	
 	public static void listObjects(List<IObject> objectsinrepo) {
-		for(IObject obj : objectsinrepo) {
-			System.out.println(
-				obj.getObjectKey() + " : " + 
-			    obj.getObjectSize() + " : " +
-				obj.getStorageClass());
-		}
+            //list objects within the repository 
+            for(IObject obj : objectsinrepo) {
+                System.out.println(
+                    obj.getObjectKey() + " : " + 
+                    obj.getObjectSize() + " : " +
+                    obj.getStorageClass());
+            }
 	}
 	
 	public static Options addOptions() {
-		Options options = new Options();
-		options.addOption("repoid", true, "Repository ID");
-		options.addOption("objectid", true, "Object ID");
-		options.addOption("ls", false, "List Objects");
-		options.addOption("download", false, "Download objects");
-		options.addOption("waittime", true, "Wait time between polling");
-		return options;
+            //add available options to the options object for 
+            //later parsing within the commandline
+            Options options = new Options();
+            options.addOption("repoid", true, "Repository ID");
+            options.addOption("objectid", true, "Object ID");
+            options.addOption("ls", false, "List Objects");
+            options.addOption("download", false, "Download objects");
+            options.addOption("waittime", true, "Wait time between polling");
+            return options;
 	}
 }
