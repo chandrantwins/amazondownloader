@@ -36,5 +36,11 @@ public interface IQueueManager {
     public boolean sendFailedObjectMessageToQueue(
             String objectid, String error);
 
+    public String getQueueType();
+    
     public ICredentials getCredentials();
+    
+    public void setCredentials(ICredentials credentials);
+    
+    public void CreateQueues();
 }

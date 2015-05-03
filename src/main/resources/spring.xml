@@ -13,12 +13,19 @@
 	
 	<bean id="queuemanager"
             class="com.jktsoftware.amazondownloader.queuemanager.DownloaderQueueManager">
-		<constructor-arg ref="s3credentials"/>
+		<constructor-arg ref="sqscredentials"/>
 		<constructor-arg value="amazon-downloader-received"/>
 		<constructor-arg value="amazon-downloader-failed"/>
 	</bean>
 	
 	<bean id="s3credentials"
+            class="com.jktsoftware.amazondownloader.download.AwsCredentials">
+		<property name="accessKeyId" value="***YOURACCESSKEY***"/>
+		<property name="secretAccessKey" 
+                          value="***YOURSECRETACCESSKEY***"/>
+	</bean>
+        
+        <bean id="sqscredentials"
             class="com.jktsoftware.amazondownloader.download.AwsCredentials">
 		<property name="accessKeyId" value="***YOURACCESSKEY***"/>
 		<property name="secretAccessKey" 

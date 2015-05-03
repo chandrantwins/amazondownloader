@@ -59,6 +59,14 @@ public class S3TypeBucket implements IObjectRepo {
         return this.credentials;
     }
 
+    public void setCredentials(ICredentials credentials) {
+        this.credentials = credentials;
+    }
+    
+    public String getRepoType() {
+        return "AmazonS3Bucket";
+    }
+
     public void setRepoId(String repoid) {
         this.repoid = repoid;
     }

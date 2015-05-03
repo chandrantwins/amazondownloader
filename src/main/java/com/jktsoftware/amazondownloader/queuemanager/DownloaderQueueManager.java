@@ -43,34 +43,45 @@ import com.jktsoftware.amazondownloader.queuemanager.interfaces.IQueueManager;
  * @author jktdev
  */
 public class DownloaderQueueManager implements IQueueManager {
-
-    String requestqueueurl = "";
-    String receivedqueueurl = "";
-    String failedqueueurl = "";
-    ICredentials credentials;
-    AmazonSQS sqs = null;
+    String _receivedqueuename = "";
+    String _failedqueuename = "";
+    String _requestqueueurl = "";
+    String _receivedqueueurl = "";
+    String _failedqueueurl = "";
+    ICredentials _credentials;
+    AmazonSQS _sqs = null;
 
     public DownloaderQueueManager(
             ICredentials credentials,
             String receivedqueuename,
             String failedqueuename) {
-        this.credentials = credentials;
+        this._credentials = credentials;
+        this._receivedqueuename = receivedqueuename;
+        this._failedqueuename = failedqueuename;
+    }
+    
+    public void CreateQueues() {
         AWSCredentials awscredentials
                 = new BasicAWSCredentials(
-                        this.credentials.getAccessKey(),
-                        this.credentials.getSecretAccessKey());
+                        this._credentials.getAccessKey(),
+                        this._credentials.getSecretAccessKey());
 
-        sqs = new AmazonSQSClient(awscredentials);
+        _sqs = new AmazonSQSClient(awscredentials);
         Region euWest1 = Region.getRegion(Regions.EU_WEST_1);
-        sqs.setRegion(euWest1);
+        _sqs.setRegion(euWest1);
 
         System.out.println("Creating amazon download queues.\n");
 
-        CreateQueueRequest createReceivedQueueRequest = new CreateQueueRequest(receivedqueuename);
-        this.receivedqueueurl = sqs.createQueue(createReceivedQueueRequest).getQueueUrl();
+        CreateQueueRequest createReceivedQueueRequest 
+                = new CreateQueueRequest(_receivedqueuename);
+        
+        this._receivedqueueurl 
+                = _sqs.createQueue(createReceivedQueueRequest).getQueueUrl();
 
-        CreateQueueRequest createFailedQueueRequest = new CreateQueueRequest(failedqueuename);
-        this.failedqueueurl = sqs.createQueue(createFailedQueueRequest).getQueueUrl();
+        CreateQueueRequest createFailedQueueRequest = new CreateQueueRequest(_failedqueuename);
+        
+        this._failedqueueurl 
+                = _sqs.createQueue(createFailedQueueRequest).getQueueUrl();
     }
 
     public boolean sendReceivedObjectMessageToQueue(String objectid) {
@@ -79,8 +90,7 @@ public class DownloaderQueueManager implements IQueueManager {
                 .add("eventtype", "downloaderReceived")
                 .add("objectid", objectid).build();
 
-        sqs.sendMessage(
-                new SendMessageRequest(this.receivedqueueurl, value.toString()));
+        _sqs.sendMessage(new SendMessageRequest(this._receivedqueueurl, value.toString()));
 
         return true;
     }
@@ -92,13 +102,20 @@ public class DownloaderQueueManager implements IQueueManager {
                 .add("objectid", objectid)
                 .add("error", error).build();
 
-        sqs.sendMessage(
-                new SendMessageRequest(this.failedqueueurl, value.toString()));
+        _sqs.sendMessage(new SendMessageRequest(this._failedqueueurl, value.toString()));
 
         return true;
     }
 
+    public String getQueueType() {
+        return "AmazonSqsBucket";
+    }
+
     public ICredentials getCredentials() {
-        return this.credentials;
+        return this._credentials;
+    }
+    
+    public void setCredentials(ICredentials credentials) {
+        this._credentials = credentials;
     }
 }

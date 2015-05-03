@@ -40,7 +40,6 @@ import com.jktsoftware.amazondownloader.download.interfaces.IObject;
  * @author jktdev
  */
 public class S3TypeObject implements IObject {
-
     String key;
     long size;
     String storageclass;
@@ -64,7 +63,7 @@ public class S3TypeObject implements IObject {
         this.repoid = repoid;
         this.s3 = s3;
     }
-
+    
     public void setObjectKey(String key) {
         this.key = key;
     }

@@ -31,23 +31,32 @@ import com.jktsoftware.amazondownloader.download.interfaces.ICredentials;
  */
 public class AwsCredentials implements ICredentials {
 
-    String accesskeyid;
-    String secretaccesskey;
+    String _accesskeyid;
+    String _secretaccesskey;
 
+    public AwsCredentials() {
+        
+    }
+    
+    public AwsCredentials(String accesskeyid, String secretaccesskey) {
+        _accesskeyid=accesskeyid;
+        _secretaccesskey=secretaccesskey;
+    }
+    
     public String getAccessKey() {
-        return accesskeyid;
+        return _accesskeyid;
     }
 
     public void setAccessKeyId(String accesskeyid) {
-        this.accesskeyid = accesskeyid;
+        this._accesskeyid = accesskeyid;
     }
 
     public String getSecretAccessKey() {
-        return secretaccesskey;
+        return _secretaccesskey;
     }
 
     public void setSecretAccessKey(String secretaccesskey) {
-        this.secretaccesskey = secretaccesskey;
+        this._secretaccesskey = secretaccesskey;
     }
 
 }

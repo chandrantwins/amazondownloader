@@ -30,7 +30,7 @@ import java.io.InputStream;
  * @author jktdev
  */
 public interface IObject {
-
+    
     public void setRepoId(String repoid);
 
     public String getRepoId();

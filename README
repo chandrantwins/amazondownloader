@@ -1,14 +1,22 @@
 This project is a simple downloader that downloads all files from an amazon s3 
-bucket when it is invoked via the command line in the following manner:-
+bucket and updates a message queue when each file has been downloaded when it 
+is invoked via the command line:-
 
-java -jar amazondownloader-1.0-SNAPSHOT-jar-with-dependencies.jar 
-    [-repoid <yourbucketname>]
-    [-objectid <objectid>]
-    [-ls]
-    [-download][-waittime <time in milliseconds>]
+usage: java -jar <name of jar> [options]
+ -cdwn,--confirmdownload       Confirm download of objects
+ -h,--help                     Help screen
+ -ls,--listobjects             List objects in repository
+ -oid,--objectid <arg>         Object ID
+ -rid,--repositoryid <arg>     Repository ID
+ -s3ak,--s3accesskey <arg>     S3 access key
+ -s3sk,--s3secretkey <arg>     S3 secret key
+ -sqsak,--sqsaccesskey <arg>   SQS access key
+ -sqssk,--sqssecretkey <arg>   SQS secret key
+ -wt,--waittime <arg>          Wait time between polling
 
 Your default bucket name, access key and secret access key are defined within
-the spring.xml with src/main/resources
+the spring.xml with src/main/resources but can be overriden via the command
+line.
 
 The parameters in spring.xml are the following: -
 

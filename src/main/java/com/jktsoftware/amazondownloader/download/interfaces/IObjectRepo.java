@@ -31,7 +31,11 @@ import java.util.List;
  */
 public interface IObjectRepo {
 
+    public String getRepoType();
+    
     public ICredentials getCredentials();
+    
+    public void setCredentials(ICredentials credentials);
 
     public List<IObject> getObjectsInRepo();
 
